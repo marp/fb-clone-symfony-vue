@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 2000, unique: true)]
+    #[ORM\Column(length: 1000)]
     private ?string $email = null;
 
     #[ORM\Column(length: 1000)]
@@ -43,6 +45,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: FriendRequests::class, orphanRemoval: true)]
+    private Collection $friendRequests;
+
+    public function __construct()
+    {
+        $this->friendRequests = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -158,6 +168,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequests>
+     */
+    public function getFriendRequests(): Collection
+    {
+        return $this->friendRequests;
+    }
+
+    public function addFriendRequest(FriendRequests $friendRequest): self
+    {
+        if (!$this->friendRequests->contains($friendRequest)) {
+            $this->friendRequests->add($friendRequest);
+            $friendRequest->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFriendRequest(FriendRequests $friendRequest): self
+    {
+        if ($this->friendRequests->removeElement($friendRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($friendRequest->getSender() === $this) {
+                $friendRequest->setSender(null);
+            }
+        }
 
         return $this;
     }
