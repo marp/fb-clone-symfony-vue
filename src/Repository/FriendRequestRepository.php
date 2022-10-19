@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\FriendRequests;
+use App\Entity\FriendRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<FriendRequests>
+ * @extends ServiceEntityRepository<FriendRequest>
  *
- * @method FriendRequests|null find($id, $lockMode = null, $lockVersion = null)
- * @method FriendRequests|null findOneBy(array $criteria, array $orderBy = null)
- * @method FriendRequests[]    findAll()
- * @method FriendRequests[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method FriendRequest|null find($id, $lockMode = null, $lockVersion = null)
+ * @method FriendRequest|null findOneBy(array $criteria, array $orderBy = null)
+ * @method FriendRequest[]    findAll()
+ * @method FriendRequest[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FriendRequestsRepository extends ServiceEntityRepository
+class FriendRequestRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FriendRequests::class);
+        parent::__construct($registry, FriendRequest::class);
     }
 
-    public function save(FriendRequests $entity, bool $flush = false): void
+    public function save(FriendRequest $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class FriendRequestsRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(FriendRequests $entity, bool $flush = false): void
+    public function remove(FriendRequest $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class FriendRequestsRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return FriendRequests[] Returns an array of FriendRequests objects
+//     * @return FriendRequest[] Returns an array of FriendRequest objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class FriendRequestsRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?FriendRequests
+//    public function findOneBySomeField($value): ?FriendRequest
 //    {
 //        return $this->createQueryBuilder('f')
 //            ->andWhere('f.exampleField = :val')

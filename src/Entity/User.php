@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,16 +11,23 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Serializer\Filter\PropertyFilter;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['uuid'], message: 'There is already an account with this uuid')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
+#[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -30,28 +38,72 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @var string The hashed password
-     */
+     *
+    */
     #[ORM\Column]
+    #[Groups(['write'])]
     private ?string $password = null;
 
-    #[ORM\Column(length: 1000)]
+    #[ORM\Column(length: 1000, unique: true)]
+    #[Groups(['read', 'write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 1000)]
+    #[Groups(['read', 'write'])]
     private ?string $Name = null;
 
     #[ORM\Column(length: 1000)]
+    #[Groups(['read', 'write',])]
     private ?string $SurName = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
-    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: FriendRequests::class, orphanRemoval: true)]
-    private Collection $friendRequests;
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class, orphanRemoval: true)]
+    #[Groups(['read'])]
+    #[ApiSubresource()]
+    private Collection $posts;
+
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: FriendRequest::class, orphanRemoval: true)]
+    private Collection $senderFriendRequests;
+
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: FriendRequest::class, orphanRemoval: true)]
+    private Collection $receiverFriendRequests;
+
+
+
+    /*
+     * Many Users have Many Users.
+     * @ManyToMany(targetEntity="User", mappedBy="myFriends")
+
+    */
+//    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'myFriends')]
+//    private $friendsWithMe;
+
+    /*
+     * Many Users have many Users.
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
+     * @ORM\JoinTable(name="friends",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="friend_user_id", referencedColumnName="id")}
+     *      )
+     */
+//    private $myFriends;
+//    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'friendsWithMe')]
+//    #[ORM\JoinTable(name: 'friends',
+//        joinColumns: [ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')],
+//        inverseJoinColumns: []
+//    )]
+//    private $myFriends;
 
     public function __construct()
     {
-        $this->friendRequests = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+        $this->senderFriendRequests = new ArrayCollection();
+        $this->receiverFriendRequests = new ArrayCollection();
+
+        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId(): ?int
@@ -173,32 +225,93 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, FriendRequests>
+     * @return Collection<int, Post>
      */
-    public function getFriendRequests(): Collection
+    public function getPosts(): Collection
     {
-        return $this->friendRequests;
+        return $this->posts;
     }
 
-    public function addFriendRequest(FriendRequests $friendRequest): self
+    public function addPost(Post $post): self
     {
-        if (!$this->friendRequests->contains($friendRequest)) {
-            $this->friendRequests->add($friendRequest);
-            $friendRequest->setSender($this);
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->setAuthor($this);
         }
 
         return $this;
     }
 
-    public function removeFriendRequest(FriendRequests $friendRequest): self
+    public function removePost(Post $post): self
     {
-        if ($this->friendRequests->removeElement($friendRequest)) {
+        if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($friendRequest->getSender() === $this) {
-                $friendRequest->setSender(null);
+            if ($post->getAuthor() === $this) {
+                $post->setAuthor(null);
             }
         }
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, FriendRequest>
+     */
+    public function getSenderFriendRequests(): Collection
+    {
+        return $this->senderFriendRequests;
+    }
+
+    public function addSenderFriendRequest(FriendRequest $senderFriendRequest): self
+    {
+        if (!$this->senderFriendRequests->contains($senderFriendRequest)) {
+            $this->senderFriendRequests->add($senderFriendRequest);
+            $senderFriendRequest->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSenderFriendRequest(FriendRequest $senderFriendRequest): self
+    {
+        if ($this->senderFriendRequests->removeElement($senderFriendRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($senderFriendRequest->getSender() === $this) {
+                $senderFriendRequest->setSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequest>
+     */
+    public function getReceiverFriendRequests(): Collection
+    {
+        return $this->receiverFriendRequests;
+    }
+
+    public function addReceiverFriendRequest(FriendRequest $receiverFriendRequest): self
+    {
+        if (!$this->receiverFriendRequests->contains($receiverFriendRequest)) {
+            $this->receiverFriendRequests->add($receiverFriendRequest);
+            $receiverFriendRequest->setReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceiverFriendRequest(FriendRequest $receiverFriendRequest): self
+    {
+        if ($this->receiverFriendRequests->removeElement($receiverFriendRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($receiverFriendRequest->getReceiver() === $this) {
+                $receiverFriendRequest->setReceiver(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

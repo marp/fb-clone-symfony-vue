@@ -1,17 +1,22 @@
 <template>
-<ul>
-<li v-for="friend in friends">
-  {{ friend }}
-</li>
-</ul>
+  Lista wszystkich możliwych:
+      <profile-preview v-for="friend in friends" :user="friend" :user_id="friend.user_id"/>
+      <br>
 </template>
 
 <script>
+import ProfilePreview from "../components/ProfilePreview";
 export default {
   name: 'FriendsPage',
+  components:{
+    'ProfilePreview': ProfilePreview
+  },
   data(){
     return{
-      friends: ['ABC2', 'ABC3']
+      friends: [
+          {name: 'Arnold', surname: 'Boczek', id: 1, user_id: 3},
+          {name: 'Jan', surname: 'Kowalski', id: 3, user_id: 1}
+      ]
     }
   }
 }

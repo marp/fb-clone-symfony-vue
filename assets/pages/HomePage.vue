@@ -1,22 +1,26 @@
 <template>
-  You have {{ friends.length }} friends.
-
+  You have {{ friends.length }} friends { <span v-for="friend in friends">{{ friend.surName + ' ' + friend.name }}</span> }.
+  <hr>
+  Dodaj nowy post:
   <input type="text" v-model="newPostInputText"/>
   <button @click="sendNewPost">Send</button>
-
   <hr>
-  <ul>
-    <li v-for="post in posts">{{ post.content }} by {{ post.author }} {{ post.date }}</li>
-  </ul>
+<!--  <ul>-->
+<!--    <li v-for="post in posts">{{ post.Content }} by {{ post.author }} {{ post.date }}</li>-->
+<!--  </ul>-->
 </template>
 
 <script>
+import post from "../components/post";
 export default {
+  components: {
+    'post': post
+  },
   name: 'HomePage',
   data(){
     return{
       posts: [],
-      friends: ['ABC', 'XYZ'],
+      friends: [],
       newPostInputText: ''
     }
   },
@@ -29,10 +33,7 @@ export default {
         method: 'POST',
         body: JSON.stringify({
           'Content':this.newPostInputText,
-          'content':this.newPostInputText,
-          'date' : "2022-10-02T17:22:42.711Z",
-          'Author' : "api/users/1",
-          'author' : "api/users/1",
+          // 'content':this.newPostInputText,
         }),
         headers: { 'Content-Type': 'application/json' }
       })
@@ -40,6 +41,7 @@ export default {
           .then(res => {
             // console.log(res)
             this.getAllPosts();
+            this.newPostInputText = "";
           });
     },
     getAllPosts(){
