@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="postHeader"><router-link :to="{ name: 'profile', params: { id: author.id }}">{{ author.SurName + ' ' + author.Name }}</router-link> {{ date }}</div>
+    <div class="postHeader"><router-link :to="{ name: 'profile', params: { id: author.id }}">{{ author.firstName + ' ' + author.lastName }}</router-link> {{ date }}</div>
     <div class="postContent">{{ content }}</div>
     <div class="postFooter"><button>Reply</button></div>
   </div>

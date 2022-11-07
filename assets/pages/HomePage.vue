@@ -1,5 +1,5 @@
 <template>
-  You have {{ friends.length }} friends { <span v-for="friend in friends">{{ friend.surName + ' ' + friend.name }}</span> }.
+  You have {{ friends.length }} friends { <span v-for="friend in friends">{{ friend.firstName + ' ' + friend.lastName }}</span> }.
   <hr>
   Dodaj nowy post:
   <input type="text" v-model="newPostInputText"/>
@@ -32,7 +32,7 @@ export default {
       fetch('/api/posts', {
         method: 'POST',
         body: JSON.stringify({
-          'Content':this.newPostInputText,
+          'content':this.newPostInputText,
           // 'content':this.newPostInputText,
         }),
         headers: { 'Content-Type': 'application/json' }

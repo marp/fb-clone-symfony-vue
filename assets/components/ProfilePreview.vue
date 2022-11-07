@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="font-weight: bold;">
-      <router-link :to="{ name: 'profile', params: { id: user.id }}">{{user.name}} {{user.surname}}</router-link>
+      <router-link :to="{ name: 'profile', params: { id: user.id }}">{{user.firstName}} {{user.lastName}}</router-link>
     </div>
     <div>
       <button @click="sendFriendRequest">Send friend request</button>
@@ -21,8 +21,8 @@ export default {
       fetch('/api/friend_requests', {
         method: 'POST',
         body: JSON.stringify({
-          "sender": this.user_id,
-          "receiver": this.user.id
+          // "sender": this.user_id,
+          "receiver": "/api/users/"+this.user.id
         }),
         headers: { 'Content-Type': 'application/json' }
       })

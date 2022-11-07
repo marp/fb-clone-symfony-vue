@@ -7,7 +7,7 @@
     <router-link to="/friends">your friends</router-link> |
     <router-link to="/friend_requests">friend requests</router-link> |
     <router-link to="/search">search</router-link> |
-    <a href="/api">API</a> |
+    <a href="/api" target="_blank">API</a> |
 <!--    <router-link to="/test">test</router-link> |-->
 
     <span v-if="id === 'null'">
@@ -15,7 +15,7 @@
       <a href="/register">Register</a> |
     </span>
 
-    <span v-if="id !== 'null'">Logged in as: <i><router-link :to="{ name: 'profile', params: { id: id }}">{{ surname + ' ' + name }}</router-link></i> <a href="/logout">[Log out]</a></span>
+    <span v-if="id !== 'null'">Logged in as: <i><router-link :to="{ name: 'profile', params: { id: id }}">{{ firstName + ' ' + lastName }}</router-link></i> <a href="/logout">[Log out]</a></span>
   </div>
 
   <hr>
@@ -42,8 +42,8 @@ export default {
   data(){
     return {
       id : sessionStorage.getItem('userId'),
-      name : sessionStorage.getItem('userName'),
-      surname : sessionStorage.getItem('userSurName'),
+      firstName : sessionStorage.getItem('userFirstName'),
+      lastName : sessionStorage.getItem('userLastName'),
       searchInputText: ''
     }
   },

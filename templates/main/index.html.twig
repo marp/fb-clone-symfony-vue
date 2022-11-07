@@ -18,12 +18,12 @@
     <script type="text/javascript">
         {% if user is not null %}
         sessionStorage.setItem('userId', '{{ user.id }}');
-        sessionStorage.setItem('userName', '{{ user.name }}');
-        sessionStorage.setItem('userSurName', '{{ user.surName }}');
+        sessionStorage.setItem('userFirstName', '{{ user.firstName }}');
+        sessionStorage.setItem('userLastName', '{{ user.lastName }}');
         {% else %}
         sessionStorage.setItem('userId', null);
-        sessionStorage.setItem('userName', null);
-        sessionStorage.setItem('userSurName', null);
+        sessionStorage.setItem('userFirstName', null);
+        sessionStorage.setItem('userLastName', null);
         {% endif %}
         {#sessionStorage.setItem('userToken', '{{ user.tokenData.token }}');#}
     </script>

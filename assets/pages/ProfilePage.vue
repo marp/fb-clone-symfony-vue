@@ -1,7 +1,7 @@
 <template>
-  <h2>{{profile.Name + ' ' + profile.SurName }}</h2>
+  <h2>{{profile.firstName + ' ' + profile.lastName }}</h2>
   <ul>
-    <li v-for="post in profile.posts">{{post.Content}}</li>
+    <li v-for="post in profile.posts">{{post.content}}</li>
   </ul>
   <p>$route.params.id: {{$route.params.id}}</p>
 </template>
@@ -12,8 +12,8 @@ export default {
   data() {
     return{
       profile: {
-        'Name' : '',
-        'SurName' : '',
+        'firstName' : '',
+        'lastName' : '',
         'posts' : []
       }
     }

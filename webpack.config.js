@@ -63,7 +63,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    .enableSassLoader()
+    //.enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
@@ -81,7 +81,7 @@ Encore
     .configureCssLoader((config) => {
         config.esModule = false;
     })
-    .enablePostCssLoader()
+    // .enablePostCssLoader()
 ;
 
 module.exports = Encore.getWebpackConfig();

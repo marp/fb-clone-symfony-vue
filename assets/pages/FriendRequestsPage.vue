@@ -2,7 +2,7 @@
   List of friend requests:
     <ul>
       <li v-for="fr in friendRequests">
-        {{ fr.dateTime }} - {{ fr.sender }} sent you an invitation <button @click="acceptInvitation(fr)">ACCEPT</button><button @click="cancelInvitation(fr)">DENY</button>
+        {{ fr.dateTime }} - {{ fr.sender.firstName }} {{fr.sender.lastName}} sent you an invitation <button @click="acceptInvitation(fr)">ACCEPT</button><button @click="cancelInvitation(fr)">DENY</button>
       </li>
     </ul>
 </template>

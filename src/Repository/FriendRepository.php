@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\FriendRequest;
+use App\Entity\Friend;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<FriendRequest>
+ * @extends ServiceEntityRepository<Friend>
  *
- * @method FriendRequest|null find($id, $lockMode = null, $lockVersion = null)
- * @method FriendRequest|null findOneBy(array $criteria, array $orderBy = null)
- * @method FriendRequest[]    findAll()
- * @method FriendRequest[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Friend|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Friend|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Friend[]    findAll()
+ * @method Friend[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FriendRequestRepository extends ServiceEntityRepository
+class FriendRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FriendRequest::class);
+        parent::__construct($registry, Friend::class);
     }
 
-    public function save(FriendRequest $entity, bool $flush = false): void
+    public function save(Friend $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class FriendRequestRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(FriendRequest $entity, bool $flush = false): void
+    public function remove(Friend $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class FriendRequestRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return FriendRequest[] Returns an array of FriendRequest objects
+//     * @return Friend[] Returns an array of Friend objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class FriendRequestRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?FriendRequest
+//    public function findOneBySomeField($value): ?Friend
 //    {
 //        return $this->createQueryBuilder('f')
 //            ->andWhere('f.exampleField = :val')

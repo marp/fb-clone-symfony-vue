@@ -21,7 +21,7 @@ use ApiPlatform\Serializer\Filter\PropertyFilter;
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
 )]
-#[ApiFilter(PropertyFilter::class)]
+//#[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -44,24 +44,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['write'])]
     private ?string $password = null;
 
-    #[ORM\Column(length: 1000, unique: true)]
-    #[Groups(['read', 'write'])]
+    #[ORM\Column(length: 1000, unique: false)]
+    #[Groups(['owner:read', 'write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 1000)]
     #[Groups(['read', 'write'])]
-    private ?string $Name = null;
+    private ?string $firstName = null;
 
     #[ORM\Column(length: 1000)]
     #[Groups(['read', 'write',])]
-    private ?string $SurName = null;
+    private ?string $lastName = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class, orphanRemoval: true)]
     #[Groups(['read'])]
-    #[ApiSubresource()]
     private Collection $posts;
 
     #[ORM\OneToMany(mappedBy: 'sender', targetEntity: FriendRequest::class, orphanRemoval: true)]
@@ -69,6 +68,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: FriendRequest::class, orphanRemoval: true)]
     private Collection $receiverFriendRequests;
+
+    #[ORM\OneToMany(mappedBy: 'firstUser', targetEntity: Friend::class, orphanRemoval: true)]
+    private Collection $firstUserFriends;
+
+    #[ORM\OneToMany(mappedBy: 'secondUser', targetEntity: Friend::class, orphanRemoval: true)]
+    private Collection $secondUserFriends;
+
+/*    #[ORM\OneToMany(mappedBy: 'firstUser', targetEntity: Friend::class, orphanRemoval: true)]
+    private Collection $firstUserFriends;
+
+    #[ORM\OneToMany(mappedBy: 'secondUser', targetEntity: Friend::class, orphanRemoval: true)]
+    private Collection $secondUserFriend;*/
 
 
 
@@ -102,8 +113,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->senderFriendRequests = new ArrayCollection();
         $this->receiverFriendRequests = new ArrayCollection();
 
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+//        $this->firstUserFriends = new ArrayCollection();
+//        $this->secondUserFriend = new ArrayCollection();
+$this->secondUserFriends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -188,26 +200,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getName(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->Name;
+        return $this->firstName;
     }
 
-    public function setName(string $Name): self
+    public function setFirstName(string $firstName): self
     {
-        $this->Name = $Name;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function getSurName(): ?string
+    public function getLastName(): ?string
     {
-        return $this->SurName;
+        return $this->lastName;
     }
 
-    public function setSurName(string $SurName): self
+    public function setLastName(string $lastName): self
     {
-        $this->SurName = $SurName;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -314,4 +326,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Friend>
+     */
+    public function getFirstUserFriends(): Collection
+    {
+        return $this->firstUserFriends;
+    }
+
+    public function addFirstUserFriend(Friend $firstUserFriend): self
+    {
+        if (!$this->firstUserFriends->contains($firstUserFriend)) {
+            $this->firstUserFriends->add($firstUserFriend);
+            $firstUserFriend->setFirstUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFirstUserFriend(Friend $firstUserFriend): self
+    {
+        if ($this->firstUserFriends->removeElement($firstUserFriend)) {
+            // set the owning side to null (unless already changed)
+            if ($firstUserFriend->getFirstUser() === $this) {
+                $firstUserFriend->setFirstUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Friend>
+     */
+    public function getSecondUserFriends(): Collection
+    {
+        return $this->secondUserFriends;
+    }
+
+    public function addSecondUserFriend(Friend $secondUserFriend): self
+    {
+        if (!$this->secondUserFriends->contains($secondUserFriend)) {
+            $this->secondUserFriends->add($secondUserFriend);
+            $secondUserFriend->setSecondUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSecondUserFriend(Friend $secondUserFriend): self
+    {
+        if ($this->secondUserFriends->removeElement($secondUserFriend)) {
+            // set the owning side to null (unless already changed)
+            if ($secondUserFriend->getSecondUser() === $this) {
+                $secondUserFriend->setSecondUser(null);
+            }
+        }
+
+        return $this;
+    }
 }
